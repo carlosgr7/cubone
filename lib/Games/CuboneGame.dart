@@ -6,14 +6,17 @@ import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
+import '../Characters/Cubone.dart';
+
 class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection{
+
+  late Cubone _cubone;
 
   @override
   FutureOr<void> onLoad() async {
     // TODO: implement onLoad
     debugMode = false;
     await images.loadAll([
-      'cubone.png',
       'back.png',
       'back-tileset.png',
       'middle.png',
@@ -21,6 +24,8 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'bg-moon.png',
       'bg-mountains.png',
       'back-tileset.png',
+      'player.png',
+      'cubone.png',
       'middle.png'
 
     ]);
@@ -29,6 +34,12 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     TiledComponent mapa1=await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
     mapa1.scale = Vector2(0.5, 0.4);
     add(mapa1);
+
+    _cubone = Cubone(position: Vector2(60, 770));
+
+
+
+    add(_cubone);
 
     return super.onLoad();
   }
