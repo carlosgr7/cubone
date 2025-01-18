@@ -22,7 +22,7 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
   bool isLeftWall=false;
 
   Cubone({required super.position,}) :
-        super(size: Vector2(200,200), anchor: Anchor.center);
+        super(size: Vector2(128,128 ), anchor: Anchor.center);
 
   @override
   void onLoad() {

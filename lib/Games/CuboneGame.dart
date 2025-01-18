@@ -33,15 +33,15 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     ]);
     add(await bgParallax());
 
-    /*TiledComponent mapa1=await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
+    TiledComponent mapa1=await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
     mapa1.scale = Vector2(0.5, 0.4);
-    add(mapa1);*/
+    add(mapa1);
 
     _cubone = Cubone(position: Vector2(100, 770));
 
 
 
-    world.add(_cubone);
+    add(_cubone);
 
     camera.viewfinder.zoom = 1.5;
     camera.viewfinder.anchor = Anchor.centerLeft;
