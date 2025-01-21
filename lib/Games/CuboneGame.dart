@@ -7,6 +7,7 @@ import 'package:flame/parallax.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../Characters/Cubone.dart';
+import '../Colisiones/RectangularColision.dart';
 
 class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection{
 
@@ -16,7 +17,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   FutureOr<void> onLoad() async {
     await super.onLoad();
     // TODO: implement onLoad
-    debugMode = false;
+    debugMode = true;
     await images.loadAll([
       'back.png',
       'back-tileset.png',
@@ -33,18 +34,31 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     ]);
     add(await bgParallax());
 
-    TiledComponent mapa1=await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
-    mapa1.scale = Vector2(0.5, 0.4);
+    TiledComponent mapa1 = await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
+    mapa1.scale = Vector2(0.25, 0.25);
+    mapa1.position = Vector2(0, -275); // Ajusta el valor de Y para subir el mapa
     add(mapa1);
 
-    _cubone = Cubone(position: Vector2(100, 770));
+
+
+    add(mapa1);
+
+    _cubone = Cubone(position: Vector2(100, 650));
 
 
 
     add(_cubone);
 
-    camera.viewfinder.zoom = 1.5;
-    camera.viewfinder.anchor = Anchor.centerLeft;
+
+    final colisiones_rectangulos = mapa1.tileMap.getLayer<ObjectGroup>('colisiones_rectangulos');
+    for (final rectColision in colisiones_rectangulos!.objects) {
+      add(RectangularColision(
+        position: Vector2(rectColision.x, rectColision.y)+ mapa1.position,
+        size: Vector2(rectColision.width, rectColision.height),
+      ));
+
+    }
+
 
   }
 

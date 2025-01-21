@@ -1,11 +1,14 @@
 import 'dart:ui';
 
 import 'package:cubone/Games/CuboneGame.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>, KeyboardHandler{
+import '../Colisiones/RectangularColision.dart';
+
+class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>, KeyboardHandler, CollisionCallbacks{
 
   int horizontalDirection=0;
 
@@ -13,7 +16,7 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
   final double aceleracion = 200;
 
   final double gravity = 50;
-  final double jumpSpeed = 600;
+  final double jumpSpeed = 800;
   //final double terminalVelocity = 150;
 
   bool hasJumped = false;
@@ -22,7 +25,7 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
   bool isLeftWall=false;
 
   Cubone({required super.position,}) :
-        super(size: Vector2(128,128 ), anchor: Anchor.center);
+        super(size: Vector2(60,60), anchor: Anchor.center);
 
   @override
   void onLoad() {
@@ -34,6 +37,7 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
         stepTime: 0.20,
       ),
     );
+    add(CircleHitbox(collisionType: CollisionType.active));
 
   }
 
@@ -54,10 +58,10 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
 
     // Determine if ember has jumped
     if (hasJumped) {
-      //if (isOnGround) {
+      if (isOnGround) {
       velocidad.y = -jumpSpeed;
-      //isOnGround=false;
-      //}
+      isOnGround=false;
+      }
       hasJumped = false;
     }
 
@@ -92,7 +96,7 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
     }
 
     if((keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight))){
+        keysPressed.contains(LogicalKeyboardKey.arrowRight)) && !isRightWall){
       horizontalDirection=1;
     }
 
@@ -100,4 +104,39 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
 
     return super.onKeyEvent(event, keysPressed);
   }
+
+  @override
+  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is RectangularColision) {
+      // Verifica si está tocando el suelo
+      if (other.y == intersectionPoints.first.y) {
+        isOnGround = true;
+      }
+      // Verifica si está tocando la pared derecha
+      else if (other.x == intersectionPoints.first.x) {
+        isRightWall = true;
+      }
+      // Verifica si está tocando la pared izquierda
+      else if (intersectionPoints.first.x == (other.x + other.width)) {
+        isLeftWall = true;
+      }
+    }
+
+
+    super.onCollisionStart(intersectionPoints, other);
+  }
+
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    // TODO: implement onCollisionEnd
+    if(other is RectangularColision){
+      isOnGround=false;
+      isRightWall=false;
+      isLeftWall=false;
+    }
+
+    super.onCollisionEnd(other);
+  }
+
 }
