@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cubone/Characters/Coin.dart';
 import 'package:cubone/Games/CuboneGame.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -16,13 +17,15 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
   final double aceleracion = 200;
 
   final double gravity = 50;
-  final double jumpSpeed = 800;
+  double jumpSpeed = 800;
   //final double terminalVelocity = 150;
 
   bool hasJumped = false;
   bool isOnGround=false;
   bool isRightWall=false;
   bool isLeftWall=false;
+
+  int iCoins = 0;
 
   Cubone({required super.position,}) :
         super(size: Vector2(60,60), anchor: Anchor.center);
@@ -80,7 +83,9 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
       flipHorizontally();
     }
 
-
+    if(iCoins>=3){
+      jumpSpeed=1200;
+    }
 
 
 
@@ -120,6 +125,10 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
       else if (intersectionPoints.first.x == (other.x + other.width)) {
         isLeftWall = true;
       }
+    }
+
+    if(other is Coin){
+      iCoins++;
     }
 
 

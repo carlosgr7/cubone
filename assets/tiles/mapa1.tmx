@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="29">
+<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="33">
  <tileset firstgid="1" source="tilesets/tileset.tsx"/>
  <tileset firstgid="81" source="tilesets/water-tileset.tsx"/>
  <tileset firstgid="84" source="tilesets/tree.tsx"/>
@@ -50,7 +50,6 @@
 </data>
  </layer>
  <objectgroup id="2" name="colisiones_rectangulos">
-  <object id="9" x="652.066" y="1367.23"/>
   <object id="16" x="960" y="1056.5" width="160.5" height="224"/>
   <object id="17" x="1120" y="1003" width="802" height="276"/>
   <object id="24" x="1" y="1022" width="958" height="251"/>
@@ -58,5 +57,19 @@
   <object id="26" x="351" y="888" width="96" height="40"/>
   <object id="27" x="480" y="662.5" width="95.5" height="41.5"/>
   <object id="28" x="992" y="918.5" width="63.5" height="41"/>
+ </objectgroup>
+ <objectgroup id="3" name="gemas">
+  <object id="29" x="525.333" y="644">
+   <point/>
+  </object>
+  <object id="30" x="205.333" y="901.333">
+   <point/>
+  </object>
+  <object id="31" x="1358.67" y="980">
+   <point/>
+  </object>
+  <object id="32" x="1024" y="904">
+   <point/>
+  </object>
  </objectgroup>
 </map>

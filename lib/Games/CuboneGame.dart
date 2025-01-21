@@ -7,6 +7,7 @@ import 'package:flame/parallax.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../Characters/Cubone.dart';
+import '../Characters/Coin.dart';
 import '../Colisiones/RectangularColision.dart';
 
 class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection{
@@ -29,6 +30,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'player.png',
       'cubonesequence.png',
       'cubonesequence1.png',
+      'coinspritesheet.png',
       'middle.png'
 
     ]);
@@ -57,6 +59,11 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
         size: Vector2(rectColision.width, rectColision.height),
       ));
 
+    }
+
+    final objectGroupGems = mapa1.tileMap.getLayer<ObjectGroup>('gemas');
+    for (final posGemaEnMapa in objectGroupGems!.objects) {
+      add(Coin(position: Vector2(posGemaEnMapa.x, posGemaEnMapa.y)+ mapa1.position));
     }
 
 
