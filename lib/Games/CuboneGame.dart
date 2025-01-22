@@ -4,21 +4,24 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../Characters/Cubone.dart';
 import '../Characters/Coin.dart';
 import '../Colisiones/RectangularColision.dart';
+import '../Overlays/HudComponent.dart';
 
 class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection{
 
   late Cubone _cubone;
+  late HudComponent hud;
 
   @override
   FutureOr<void> onLoad() async {
     await super.onLoad();
     // TODO: implement onLoad
-    debugMode = true;
+    debugMode = false;
     await images.loadAll([
       'back.png',
       'back-tileset.png',
@@ -31,9 +34,14 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'cubonesequence.png',
       'cubonesequence1.png',
       'coinspritesheet.png',
+      'heart.png',
+      'coin.png',
       'middle.png'
 
     ]);
+
+    await FlameAudio.audioCache.load('coincollect.mp3');
+    
     add(await bgParallax());
 
     TiledComponent mapa1 = await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
@@ -46,6 +54,13 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     add(mapa1);
 
     _cubone = Cubone(position: Vector2(100, 650));
+
+
+    hud = HudComponent();
+    add(hud);
+
+    //Para colocar el HUD siempre encima de todo
+    hud.priority = 100;
 
 
 
@@ -78,6 +93,15 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     ], baseVelocity: Vector2(10, 0),
     velocityMultiplierDelta: Vector2(1.5, 0));
     return parallaxComponent;
+  }
+
+  void loseLife() {
+    hud.updateLives(hud.lives - 1);
+  }
+
+  void collectCoin() {
+    hud.updateCoins(_cubone.coins);
+    FlameAudio.play('coincollect.mp3', volume: .75);
   }
 
 }

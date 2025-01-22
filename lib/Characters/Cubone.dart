@@ -4,31 +4,30 @@ import 'package:cubone/Characters/Coin.dart';
 import 'package:cubone/Games/CuboneGame.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import '../Colisiones/RectangularColision.dart';
 
-class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>, KeyboardHandler, CollisionCallbacks{
+class Cubone extends SpriteAnimationComponent
+    with HasGameReference<CuboneGame>, KeyboardHandler, CollisionCallbacks {
+  int horizontalDirection = 0;
 
-  int horizontalDirection=0;
-
-  final Vector2 velocidad = Vector2.zero();
+  Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
 
-  final double gravity = 50;
-  double jumpSpeed = 800;
-  //final double terminalVelocity = 150;
+  final double gravity = 300;
+  double jumpSpeed = 2300;
 
   bool hasJumped = false;
-  bool isOnGround=false;
-  bool isRightWall=false;
-  bool isLeftWall=false;
+  bool isOnGround = false;
+  bool isRightWall = false;
+  bool isLeftWall = false;
 
   int iCoins = 0;
+  int get coins => iCoins;
 
-  Cubone({required super.position,}) :
-        super(size: Vector2(60,60), anchor: Anchor.center);
+  Cubone({required super.position})
+      : super(size: Vector2(60, 60), anchor: Anchor.center);
 
   @override
   void onLoad() {
@@ -36,42 +35,32 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
       game.images.fromCache('cubonesequence1.png'),
       SpriteAnimationData.sequenced(
         amount: 5,
-        textureSize: Vector2(32.5,42),
+        textureSize: Vector2(32.5, 42),
         stepTime: 0.20,
       ),
     );
     add(CircleHitbox(collisionType: CollisionType.active));
-
-  }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
 
-    velocidad.x = horizontalDirection * aceleracion ;
-    double temp=gravity;
+    velocidad.x = horizontalDirection * aceleracion;
+    double temp = gravity;
     if (isOnGround) {
-      temp=0;
+      temp = 0;
     }
 
-    // Determine if ember has jumped
     if (hasJumped) {
       if (isOnGround) {
-      velocidad.y = -jumpSpeed;
-      isOnGround=false;
+        velocidad.y = -jumpSpeed;
+        isOnGround = false;
       }
+      //velocidad=Vector2.zero();
       hasJumped = false;
     }
 
-
-
-    // Prevent ember from jumping to crazy fast as well as descending too fast and
-    // crashing through the ground or a platform.
     velocidad.y += temp;
     velocidad.y = velocidad.y.clamp(-jumpSpeed, temp);
 
@@ -83,26 +72,24 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
       flipHorizontally();
     }
 
-    if(iCoins>=3){
-      jumpSpeed=1200;
+    if (iCoins >= 3) {
+      jumpSpeed = 3200;
     }
-
-
-
   }
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    horizontalDirection=0;
+    horizontalDirection = 0;
 
-    if(keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft)){
-      horizontalDirection=-1;
+    if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      horizontalDirection = -1;
     }
 
-    if((keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight)) && !isRightWall){
-      horizontalDirection=1;
+    if ((keysPressed.contains(LogicalKeyboardKey.keyD) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowRight)) &&
+        !isRightWall) {
+      horizontalDirection = 1;
     }
 
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
@@ -111,41 +98,34 @@ class Cubone extends SpriteAnimationComponent with HasGameReference<CuboneGame>,
   }
 
   @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is RectangularColision) {
-      // Verifica si está tocando el suelo
       if (other.y == intersectionPoints.first.y) {
         isOnGround = true;
-      }
-      // Verifica si está tocando la pared derecha
-      else if (other.x == intersectionPoints.first.x) {
+      } else if (other.x == intersectionPoints.first.x) {
         isRightWall = true;
-      }
-      // Verifica si está tocando la pared izquierda
-      else if (intersectionPoints.first.x == (other.x + other.width)) {
+      } else if (intersectionPoints.first.x == (other.x + other.width)) {
         isLeftWall = true;
       }
     }
 
-    if(other is Coin){
+    if (other is Coin) {
       iCoins++;
+      game.collectCoin(); //actualiza el hud al recolectar una moneda
     }
-
 
     super.onCollisionStart(intersectionPoints, other);
   }
 
-
   @override
   void onCollisionEnd(PositionComponent other) {
-    // TODO: implement onCollisionEnd
-    if(other is RectangularColision){
-      isOnGround=false;
-      isRightWall=false;
-      isLeftWall=false;
+    if (other is RectangularColision) {
+      isOnGround = false;
+      isRightWall = false;
+      isLeftWall = false;
     }
 
     super.onCollisionEnd(other);
   }
-
 }

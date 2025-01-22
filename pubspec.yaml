@@ -63,6 +63,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
+    - assets/audio/
     - assets/images/
     - assets/images/imgs_tiles/
     - assets/images/imgs_tiles/escenario/
@@ -70,6 +71,8 @@ flutter:
     - assets/tiles/mapa1.tmx
     - assets/tiles/tilesets/
     - assets/tiles/tilesets/tileset.tsx
+
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
