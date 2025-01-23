@@ -37,6 +37,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'cubonesequence1.png',
       'coinspritesheet.png',
       'missignospritesheet.png',
+      'cuboneataque.png',
       'heart.png',
       'coin.png',
       'middle.png'
