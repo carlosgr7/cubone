@@ -53,10 +53,10 @@
   <object id="16" x="960" y="1056.5" width="160.5" height="224"/>
   <object id="17" x="1120" y="1003" width="802" height="276"/>
   <object id="24" x="1" y="1022" width="958" height="251"/>
-  <object id="25" x="159" y="918" width="97" height="41.5"/>
-  <object id="26" x="351" y="888" width="96" height="40"/>
-  <object id="27" x="480" y="662.5" width="95.5" height="41.5"/>
-  <object id="28" x="992" y="918.5" width="63.5" height="41"/>
+  <object id="25" x="152" y="922.833" width="111.333" height="32.1667"/>
+  <object id="26" x="341.333" y="894" width="113" height="30"/>
+  <object id="27" x="466" y="667" width="119.5" height="31.5"/>
+  <object id="28" x="985.5" y="926.5" width="81.5" height="31.5"/>
  </objectgroup>
  <objectgroup id="3" name="gemas">
   <object id="29" x="525.333" y="644">

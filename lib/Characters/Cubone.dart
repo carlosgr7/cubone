@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cubone/Characters/Coin.dart';
+import 'package:cubone/Characters/Missigno.dart';
 import 'package:cubone/Games/CuboneGame.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -15,7 +16,7 @@ class Cubone extends SpriteAnimationComponent
   Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
 
-  final double gravity = 300;
+  final double gravity = 280;
   double jumpSpeed = 2300;
 
   bool hasJumped = false;
@@ -25,6 +26,8 @@ class Cubone extends SpriteAnimationComponent
 
   int iCoins = 0;
   int get coins => iCoins;
+
+  int iVidas = 3;
 
   Cubone({required super.position})
       : super(size: Vector2(60, 60), anchor: Anchor.center);
@@ -72,8 +75,14 @@ class Cubone extends SpriteAnimationComponent
       flipHorizontally();
     }
 
-    if (iCoins >= 3) {
-      jumpSpeed = 3200;
+    if (iCoins == 1) {
+      jumpSpeed = 2600;
+    } else if (iCoins == 2){
+      jumpSpeed == 2900;
+    } else if(iCoins == 3){
+      jumpSpeed == 3200;
+    } else if (iCoins == 4){
+      jumpSpeed == 3500;
     }
   }
 
@@ -113,6 +122,11 @@ class Cubone extends SpriteAnimationComponent
     if (other is Coin) {
       iCoins++;
       game.collectCoin(); //actualiza el hud al recolectar una moneda
+    }
+
+    if(other is Missigno){
+      iVidas--;
+      game.loseLife();
     }
 
     super.onCollisionStart(intersectionPoints, other);

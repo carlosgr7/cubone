@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cubone/Characters/Missigno.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -16,12 +17,13 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
   late Cubone _cubone;
   late HudComponent hud;
+  late Missigno _missigno;
 
   @override
   FutureOr<void> onLoad() async {
     await super.onLoad();
     // TODO: implement onLoad
-    debugMode = false;
+    debugMode = true;
     await images.loadAll([
       'back.png',
       'back-tileset.png',
@@ -34,6 +36,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'cubonesequence.png',
       'cubonesequence1.png',
       'coinspritesheet.png',
+      'missignospritesheet.png',
       'heart.png',
       'coin.png',
       'middle.png'
@@ -65,6 +68,10 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
 
     add(_cubone);
+
+    spawnMissignos();
+
+
 
 
     final colisiones_rectangulos = mapa1.tileMap.getLayer<ObjectGroup>('colisiones_rectangulos');
@@ -103,5 +110,38 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     hud.updateCoins(_cubone.coins);
     FlameAudio.play('coincollect.mp3', volume: .75);
   }
+  void spawnMissignos() {
+    final missigno1 = Missigno(
+      position: Vector2(650, 690),
+      movementPoints: [
+        Vector2(700, 690), // Punto 1
+        Vector2(750, 690), // Punto 2
+        Vector2(800, 690), // Punto 3
+      ],
+    );
+
+    final missigno2 = Missigno(
+      position: Vector2(1000, 750),
+      movementPoints: [
+        Vector2(900, 640),
+        Vector2(1000, 550),
+        Vector2(1150, 640),
+      ],
+    );
+
+    final missigno3 = Missigno(
+      position: Vector2(1300, 690),
+      movementPoints: [
+        Vector2(1299, 640),
+        Vector2(1400, 640),
+        Vector2(1399, 690),
+      ],
+    );
+
+    add(missigno1);
+    add(missigno2);
+    add(missigno3);
+  }
+
 
 }
