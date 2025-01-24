@@ -8,6 +8,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 
 import '../Colisiones/RectangularColision.dart';
+import 'Skull.dart';
 
 class Cubone extends SpriteAnimationComponent
     with HasGameReference<CuboneGame>, KeyboardHandler, CollisionCallbacks {
@@ -17,7 +18,7 @@ class Cubone extends SpriteAnimationComponent
   final double aceleracion = 200;
 
   final double gravity = 280;
-  double jumpSpeed = 2300;
+  double jumpSpeed = 2000;
 
   bool hasJumped = false;
   bool isOnGround = false;
@@ -29,30 +30,37 @@ class Cubone extends SpriteAnimationComponent
 
   int iVidas = 3;
 
-  bool isAttacking = false;//controlador de si ataca o no cubone
+  int iSkulls = 0;
+  int get skulls => iSkulls;
+
+  bool isAttacking = false; // Controlador de si ataca o no
   late Future<void> attackFuture;
+
+  // Variables del dash
+  bool isDashing = false;
+  final double dashSpeed = 1000; // Velocidad del dash (hacia la izquierda)
+  final double dashDuration = 0.2; // Duración del dash (en segundos)
+  double dashTimer = 0; // Temporizador para controlar el dash
 
   Cubone({required super.position})
       : super(size: Vector2(60, 60), anchor: Anchor.center);
 
   @override
   void onLoad() {
-    // Animación de movimiento normal
     animation = SpriteAnimation.fromFrameData(
       game.images.fromCache('cubonesequence1.png'),
       SpriteAnimationData.sequenced(
-        amount: 5, // Número de fotogramas
-        textureSize: Vector2(32.5, 42), // Tamaño de cada sprite
-        stepTime: 0.20, // Tiempo por fotograma (velocidad de la animación)
+        amount: 5,
+        textureSize: Vector2(32.5, 42),
+        stepTime: 0.20,
       ),
     );
-    add(CircleHitbox(collisionType: CollisionType.active)); // Colisiones del personaje
+    add(CircleHitbox(collisionType: CollisionType.active));
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-
     // Si está atacando, mostrar la animación de ataque
     if (isAttacking) {
       // Solo cambiar la animación de ataque si no está activa
@@ -79,13 +87,23 @@ class Cubone extends SpriteAnimationComponent
         );
       }
     }
+    // Dash en progreso
+    if (isDashing) {
+      dashTimer -= dt;
+      if (dashTimer <= 0) {
+        isDashing = false; // Finaliza el dash
+        velocidad.x = 0; // Detiene el movimiento horizontal
+      }
+    } else {
+      // Movimiento estándar si no está en dash
+      velocidad.x = horizontalDirection * aceleracion;
+    }
 
-    velocidad.x = horizontalDirection * aceleracion;
+    // Gravedad y salto
     double temp = gravity;
     if (isOnGround) {
       temp = 0;
     }
-
     if (hasJumped) {
       if (isOnGround) {
         velocidad.y = -jumpSpeed;
@@ -99,20 +117,22 @@ class Cubone extends SpriteAnimationComponent
 
     position += velocidad * dt;
 
+    // Flip del sprite según dirección
     if (horizontalDirection < 0 && scale.x > 0) {
       flipHorizontally();
     } else if (horizontalDirection > 0 && scale.x < 0) {
       flipHorizontally();
     }
 
+    // Ajusta el salto basado en monedas recolectadas
     if (iCoins == 1) {
-      jumpSpeed = 2600;
+      //jumpSpeed = 2300;
     } else if (iCoins == 2) {
-      jumpSpeed == 2900;
+      jumpSpeed = 2300;
     } else if (iCoins == 3) {
-      jumpSpeed == 3200;
+      jumpSpeed = 2700;
     } else if (iCoins == 4) {
-      jumpSpeed == 3500;
+      jumpSpeed = 3000;
     }
   }
 
@@ -120,47 +140,58 @@ class Cubone extends SpriteAnimationComponent
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalDirection = 0;
 
+    // Movimiento hacia la izquierda
     if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
         keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
       horizontalDirection = -1;
     }
 
-    if ((keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight)) &&
-        !isRightWall) {
+    // Movimiento hacia la derecha
+    if (keysPressed.contains(LogicalKeyboardKey.keyD) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
       horizontalDirection = 1;
     }
 
+    // Salto
     hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
 
-    // Activar ataque con la tecla D
-    if (keysPressed.contains(LogicalKeyboardKey.keyF)) {
-      if (!isAttacking) {
-        isAttacking = true;
-        ataqueCubone();
-      }
-    } else {
+    // Ataque
+    if (keysPressed.contains(LogicalKeyboardKey.keyS) && !isAttacking) {
+      isAttacking = true;
+      ataqueCubone();
+    }
 
+    // Dash
+    if (keysPressed.contains(LogicalKeyboardKey.keyX) &&
+        iSkulls == 1 &&
+        !isDashing) {
+      isDashing = true; // Activa el estado de dash
+      dashTimer = dashDuration; // Reinicia el temporizador
+      velocidad.x = -dashSpeed; // Asigna la velocidad del dash
+    }
+
+    if (keysPressed.contains(LogicalKeyboardKey.keyC) &&
+        iSkulls == 1 &&
+        !isDashing) {
+      isDashing = true; // Activa el estado de dash
+      dashTimer = dashDuration; // Reinicia el temporizador
+      velocidad.x = dashSpeed; // Asigna la velocidad del dash
     }
 
     return super.onKeyEvent(event, keysPressed);
   }
 
   void ataqueCubone() {
-    //eliminar a missigno si esta cerca del personaje
     final missignos = game.children.query<Missigno>();
     for (final missigno in missignos) {
-      if (this.position.distanceTo(missigno.position) < 100) {  // Rango de ataque
+      if (this.position.distanceTo(missigno.position) < 100) {
         missigno.removeFromParent();
       }
     }
-
-    //mantiene el ataque
     attackFuture = Future.delayed(Duration(milliseconds: 500), () {
-      isAttacking = false;  //termina el ataque despues del tiempo transcurrido
+      isAttacking = false;
     });
   }
-
 
   @override
   void onCollisionStart(
@@ -177,12 +208,15 @@ class Cubone extends SpriteAnimationComponent
 
     if (other is Coin) {
       iCoins++;
-      game.collectCoin(); //actualiza el hud al recolectar una moneda
+      game.collectCoin();
     }
 
     if (other is Missigno) {
       iVidas--;
       game.loseLife();
+    }
+    if (other is Skull) {
+      iSkulls++;
     }
 
     super.onCollisionStart(intersectionPoints, other);

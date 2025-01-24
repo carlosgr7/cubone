@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cubone/Characters/Missigno.dart';
+import 'package:cubone/Characters/Skull.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -38,6 +39,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'coinspritesheet.png',
       'missignospritesheet.png',
       'cuboneataque.png',
+      'skull.png',
       'heart.png',
       'coin.png',
       'middle.png'
@@ -69,6 +71,8 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
 
     add(_cubone);
+
+    add(Skull(position: Vector2(1790, 100), size: Vector2(45,45)));
 
     spawnMissignos();
 
@@ -111,6 +115,12 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     hud.updateCoins(_cubone.coins);
     FlameAudio.play('coincollect.mp3', volume: .75);
   }
+
+  void collectSkull() {
+    hud.updateSkulls(_cubone.iSkulls);
+    //FlameAudio.play('coincollect.mp3', volume: .75);
+  }
+
   void spawnMissignos() {
     final missigno1 = Missigno(
       position: Vector2(650, 690),
