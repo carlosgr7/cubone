@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cubone/Characters/Coin.dart';
 import 'package:cubone/Characters/Missigno.dart';
+import 'package:cubone/Colisiones/WaterColision.dart';
 import 'package:cubone/Games/CuboneGame.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -33,7 +34,7 @@ class Cubone extends SpriteAnimationComponent
   int iSkulls = 0;
   int get skulls => iSkulls;
 
-  bool isAttacking = false; // Controlador de si ataca o no
+  bool isAttacking = false;
   late Future<void> attackFuture;
 
   // Variables del dash
@@ -61,28 +62,28 @@ class Cubone extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-    // Si está atacando, mostrar la animación de ataque
+
     if (isAttacking) {
-      // Solo cambiar la animación de ataque si no está activa
+      //solo cambiar la animación de ataque si no esta activa
       if (animation?.frames == null || animation!.frames.length != 3) {
         animation = SpriteAnimation.fromFrameData(
-          game.images.fromCache('cuboneataque.png'), // Cambiar al sprite de ataque
+          game.images.fromCache('cuboneataque.png'),
           SpriteAnimationData.sequenced(
-            amount: 3, // Número de fotogramas del ataque
-            textureSize: Vector2(50, 50), // Tamaño del sprite de ataque
-            stepTime: 0.30, // Velocidad de la animación de ataque
+            amount: 3,
+            textureSize: Vector2(50, 50),
+            stepTime: 0.30,
           ),
         );
       }
     } else {
-      // Si no está atacando, mostrar la animación normal de movimiento
+      //si no está atacando, mostrar la animación normal de movimiento
       if (animation?.frames == null || animation!.frames.length != 5) {
         animation = SpriteAnimation.fromFrameData(
           game.images.fromCache('cubonesequence1.png'), // Animación de movimiento
           SpriteAnimationData.sequenced(
-            amount: 5, // Número de fotogramas
-            textureSize: Vector2(32.5, 42), // Tamaño de los fotogramas de movimiento
-            stepTime: 0.20, // Tiempo por fotograma (velocidad)
+            amount: 5,
+            textureSize: Vector2(32.5, 42),
+            stepTime: 0.20,
           ),
         );
       }
@@ -117,14 +118,12 @@ class Cubone extends SpriteAnimationComponent
 
     position += velocidad * dt;
 
-    // Flip del sprite según dirección
     if (horizontalDirection < 0 && scale.x > 0) {
       flipHorizontally();
     } else if (horizontalDirection > 0 && scale.x < 0) {
       flipHorizontally();
     }
 
-    // Ajusta el salto basado en monedas recolectadas
     if (iCoins == 1) {
       //jumpSpeed = 2300;
     } else if (iCoins == 2) {
@@ -133,6 +132,10 @@ class Cubone extends SpriteAnimationComponent
       jumpSpeed = 2700;
     } else if (iCoins == 4) {
       jumpSpeed = 3000;
+    }
+
+    if (iVidas <= 0) {
+      game.showGameOverScreen(); //gameOver
     }
   }
 
@@ -217,6 +220,17 @@ class Cubone extends SpriteAnimationComponent
     }
     if (other is Skull) {
       iSkulls++;
+      game.collectSkull();
+    }
+    if(other is Skull && iSkulls == 1){
+      game.mostrarDialogo("Has desbloqueado el poder de dashear. Pulsa X para desplazarte a la izquierda y C para desplazarte a la derecha");
+    }
+    if(other is WaterColision){
+      iVidas--;
+      game.loseLife();
+    }
+    if(other is WaterColision && (iVidas == 2 || iVidas == 1)){
+      game.mostrarDialogo("¡Cubone no sabe nadar! Tocar el agua te hara perder salud");
     }
 
     super.onCollisionStart(intersectionPoints, other);

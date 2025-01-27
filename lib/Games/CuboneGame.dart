@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cubone/Characters/Missigno.dart';
 import 'package:cubone/Characters/Skull.dart';
+import 'package:cubone/Colisiones/WaterColision.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
@@ -20,11 +21,13 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   late HudComponent hud;
   late Missigno _missigno;
 
+  String? dialogoTexto;
+
   @override
   FutureOr<void> onLoad() async {
     await super.onLoad();
     // TODO: implement onLoad
-    debugMode = true;
+    debugMode = false;
     await images.loadAll([
       'back.png',
       'back-tileset.png',
@@ -49,6 +52,9 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     await FlameAudio.audioCache.load('coincollect.mp3');
     
     add(await bgParallax());
+
+    overlays.add('DialogOverlay'); // Registra el overlay
+    overlays.remove('DialogOverlay'); // Inicialmente oculto
 
     TiledComponent mapa1 = await TiledComponent.load("mapa1.tmx", Vector2(128, 128));
     mapa1.scale = Vector2(0.25, 0.25);
@@ -85,7 +91,14 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
         position: Vector2(rectColision.x, rectColision.y)+ mapa1.position,
         size: Vector2(rectColision.width, rectColision.height),
       ));
+    }
 
+    final colisiones_agua = mapa1.tileMap.getLayer<ObjectGroup>('colisiones_agua');
+    for (final waterColision in colisiones_agua!.objects) {
+      add(WaterColision(
+        position: Vector2(waterColision.x, waterColision.y)+ mapa1.position,
+        size: Vector2(waterColision.width, waterColision.height),
+      ));
     }
 
     final objectGroupGems = mapa1.tileMap.getLayer<ObjectGroup>('gemas');
@@ -117,7 +130,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   }
 
   void collectSkull() {
-    hud.updateSkulls(_cubone.iSkulls);
+    hud.updateSkulls(_cubone.skulls);
     //FlameAudio.play('coincollect.mp3', volume: .75);
   }
 
@@ -153,6 +166,49 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     add(missigno2);
     add(missigno3);
   }
+  void mostrarDialogo(String text) {
+    dialogoTexto = text;
+    overlays.add('DialogOverlay');
+  }
+
+  void cerrarDialogo() {
+    dialogoTexto = null;
+    overlays.remove('DialogOverlay');
+  }
+
+  void showGameOverScreen() {
+    pauseEngine();
+    overlays.add('GameOverOverlay');
+  }
+
+  void hideGameOverScreen() {
+    overlays.remove('GameOverOverlay'); //elimina el overlay
+    resumeEngine();
+  }
+
+  void reset() {
+    // Elimina todos los componentes del juego
+    final components = List.of(children);
+    for (final component in components) {
+      component.removeFromParent();
+    }
+
+    _cubone.iVidas = 3;
+    _cubone.iSkulls = 0;
+    _cubone.iCoins = 0;
+    _cubone.position = Vector2(100, 100);
+    _cubone.isOnGround = false;
+    _cubone.isAttacking = false;
+    _cubone.isDashing = false;
+
+    onLoad();
+
+    resumeEngine();
+  }
+
+
+
+
 
 
 }
