@@ -50,7 +50,10 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     ]);
 
     await FlameAudio.audioCache.load('coincollect.mp3');
-    
+    await FlameAudio.audioCache.load('gameover.mp3');
+    await FlameAudio.audioCache.load('background.mp3');
+    await FlameAudio.audioCache.load('loselife.mp3');
+
     add(await bgParallax());
 
     overlays.add('DialogOverlay'); // Registra el overlay
@@ -82,7 +85,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
     spawnMissignos();
 
-
+    //FlameAudio.loop('background.mp3', volume: .75);
 
 
     final colisiones_rectangulos = mapa1.tileMap.getLayer<ObjectGroup>('colisiones_rectangulos');
@@ -122,6 +125,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
   void loseLife() {
     hud.updateLives(hud.lives - 1);
+    FlameAudio.play('loselife.mp3', volume: .75);
   }
 
   void collectCoin() {
@@ -186,6 +190,26 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     resumeEngine();
   }
 
+  @override
+  void onMount() {
+    super.onMount();
+    // Escuchar el primer tap para iniciar la música.
+    overlays.add('Juega'); // Muestra algo como "Toca para empezar".
+  }
+
+  void startGame() {
+    FlameAudio.loop('background.mp3', volume: 0.75);
+    overlays.remove('Juega'); // Oculta el mensaje inicial.
+  }
+
+  @override
+  void onDetach() {
+    super.onDetach();
+
+    FlameAudio.bgm.stop();
+  }
+
+
   void reset() {
     // Elimina todos los componentes del juego
     final components = List.of(children);
@@ -202,6 +226,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     _cubone.isDashing = false;
 
     onLoad();
+
 
     resumeEngine();
   }
