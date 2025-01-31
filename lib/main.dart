@@ -14,7 +14,10 @@ void main() {
         'DialogOverlay': (BuildContext context, CuboneGame game) {
           return DialogoOverlay(
             text: game.dialogoTexto ?? '',
-            onClose: game.cerrarDialogo,
+            onClose: () {
+              game.cerrarDialogo();
+              game.startGame(); // Inicia el juego después de cerrar el diálogo
+            },
           );
         },
         'GameOverOverlay': (BuildContext context, CuboneGame game) {
@@ -22,15 +25,26 @@ void main() {
             onRestart: () {
               game.hideGameOverScreen(); // Ocultar la pantalla de Game Over
               game.reset();
-
             },
           );
         },
-        // Overlay inicial para pedir interacción
         'Juega': (BuildContext context, CuboneGame game) {
           return GestureDetector(
             onTap: () {
-              game.startGame(); // Llama al método para iniciar el juego y la música
+              game.mostrarDialogo(
+                """📜 **Controles de Cubone:**
+🔹 **Moverse a la derecha** → `D` / `→`
+🔹 **Moverse a la izquierda** → `A` / `←`
+🔹 **Atacar** → `S`
+🔹 **Saltar** → `ESPACIO`
+
+👻 **Controles de Gastly:**
+🔹 **Moverse a la derecha** → `L`
+🔹 **Moverse a la izquierda** → `J`
+🔹 **Atacar** → `K`
+🔹 **Saltar** → `V`
+""",
+              );
             },
             child: Container(
               color: Colors.black54,

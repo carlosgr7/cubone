@@ -1,3 +1,4 @@
+import 'package:cubone/Characters/Gastly.dart';
 import 'package:cubone/Games/CuboneGame.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -37,7 +38,7 @@ class Coin extends SpriteAnimationComponent with HasGameReference<CuboneGame>, C
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     // TODO: implement onCollisionStart
 
-    if(other is Cubone){
+    if(other is Cubone || other is Gastly){
       //size*=2;
 
       //if(intersectionPoints.first.y==(other.y+other.height)){

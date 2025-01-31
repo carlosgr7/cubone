@@ -3,6 +3,7 @@ import 'package:flame/collisions.dart';
 
 import '../Games/CuboneGame.dart';
 import 'Cubone.dart';
+import 'Gastly.dart';
 
 class Skull extends SpriteComponent with HasGameReference<CuboneGame>, CollisionCallbacks {
   Skull({
@@ -22,7 +23,7 @@ class Skull extends SpriteComponent with HasGameReference<CuboneGame>, Collision
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is Cubone) {
+    if (other is Cubone || other is Gastly) {
 
       removeFromParent();
     }

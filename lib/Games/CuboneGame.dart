@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cubone/Characters/Gastly.dart';
 import 'package:cubone/Characters/Missigno.dart';
 import 'package:cubone/Characters/Skull.dart';
 import 'package:cubone/Colisiones/WaterColision.dart';
@@ -20,6 +21,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
   late Cubone _cubone;
   late HudComponent hud;
   late Missigno _missigno;
+  late Gastly _gastly;
 
   String? dialogoTexto;
 
@@ -45,7 +47,9 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
       'skull.png',
       'heart.png',
       'coin.png',
-      'middle.png'
+      'middle.png',
+      'gastly.png',
+      'gastlyataque.png'
 
     ]);
 
@@ -69,6 +73,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     add(mapa1);
 
     _cubone = Cubone(position: Vector2(100, 650));
+    _gastly = Gastly(position: Vector2(1700, 650));
 
 
     hud = HudComponent();
@@ -80,6 +85,7 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
 
     add(_cubone);
+    add(_gastly);
 
     add(Skull(position: Vector2(1790, 100), size: Vector2(45,45)));
 
@@ -130,11 +136,14 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
 
   void collectCoin() {
     hud.updateCoins(_cubone.coins);
+    hud.updateCoins(_gastly.coins);
     FlameAudio.play('coincollect.mp3', volume: .75);
   }
 
   void collectSkull() {
     hud.updateSkulls(_cubone.skulls);
+    hud.updateSkulls(_gastly.skulls);
+
     //FlameAudio.play('coincollect.mp3', volume: .75);
   }
 
@@ -201,6 +210,16 @@ class CuboneGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisi
     FlameAudio.loop('background.mp3', volume: 0.75);
     overlays.remove('Juega'); // Oculta el mensaje inicial.
   }
+
+  void mostrarControles(String texto) {
+    dialogoTexto = texto;
+    overlays.add('DialogOverlay'); // Muestra el diálogo con la información
+  }
+
+  void cerrarControles() {
+    overlays.remove('DialogOverlay'); // Oculta el diálogo
+  }
+
 
   @override
   void onDetach() {
